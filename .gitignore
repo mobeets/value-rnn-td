@@ -2,7 +2,6 @@
 *.m~
 papers/*.pdf
 data/
-plots/
 *.pyc
 
 ## Core latex/pdflatex auxiliary files:

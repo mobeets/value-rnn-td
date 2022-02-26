@@ -49,7 +49,7 @@ def plot_predictions(responses, key='value', gamma=1.0):
         discount = lambda rs_future: np.sum([r * gamma ** (tau+1) if ~np.isnan(r) else 0.0 for tau,r in enumerate(rs_future)])
     
     plt.figure(figsize=(2,4))
-    ymax = 0.7 # for spacing in plots
+    ymax = 0.85 # for spacing in plots
     tstep = max([trial[key].max()-trial[key].min() for trial in responses]) # for spacing in plots
     for t, trial in enumerate(responses):
         X = trial['X']
@@ -67,15 +67,15 @@ def plot_predictions(responses, key='value', gamma=1.0):
         plt.plot(t_stim*np.ones(2), [-t*tstep, -t*tstep + tstep*ymax], '-', color=clr)
         
         # plot reward
-        plt.plot(t_rew*np.ones(2), [-t*tstep, -t*tstep + tstep*ymax], 'k-')
+        plt.plot(t_rew*np.ones(2), [-t*tstep, -t*tstep + tstep*ymax], 'k-', alpha=0.25)
 
         # plot prediction
-        plt.plot(xs[:len(y)], ymax*y - t*tstep, '.-', color=clr)
+        plt.plot(xs[:len(y)], 0.95*ymax*y - t*tstep, '.-', color=clr)
 
         if key == 'value':
             # plot true value
             R = np.array([r + discount(rs[(i+1):]) for i,r in enumerate(rs)])
-            plt.plot(xs, tstep*ymax*R - t*tstep, 'k-', alpha=0.5)
+            plt.plot(xs, tstep*ymax*R - t*tstep, 'k--', alpha=0.9)
     
     plt.xlabel('time $\\rightarrow$')
     plt.ylabel(key)
