@@ -13,9 +13,9 @@ class PavlovTiming(Dataset):
     def __init__(self, ncues=4, ntrials_per_cue=50, include_reward=False):
         self.include_reward = include_reward
         self.ncues = ncues
-        self.reward_times = 5 + np.arange(ncues)
-        self.ntrials_per_cue = [ntrials_per_cue]*ncues
-        self.ntrials = sum(self.ntrials_per_cue)
+        self.reward_times = 10 + 5*np.arange(ncues)
+        self.ntrials_per_cue = ntrials_per_cue
+        self.ntrials = self.ncues * self.ntrials_per_cue
         self.make_trials()
 
     def make_trial(self, cue, iti):
@@ -27,8 +27,9 @@ class PavlovTiming(Dataset):
 
     def make_trials(self):
         # randomize trial order
-        cues = np.array([c for c,n in enumerate(self.ntrials_per_cue) for i in range(n)])
-        cues = cues[np.argsort(np.random.randn(len(cues)))]; # shuffle order
+        # cues = np.array([c for c,n in enumerate(self.ntrials_per_cue) for i in range(n)])
+        # cues = cues[np.argsort(np.random.randn(len(cues)))]; # shuffle order
+        cues = np.tile(np.arange(self.ncues), self.ntrials_per_cue)
         
         # ITI per trial
         ITIs = np.random.geometric(p=0.5, size=self.ntrials)

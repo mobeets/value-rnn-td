@@ -35,9 +35,9 @@ def plot_trials(trials):
         for c in range(trials[t].shape[1]):
             yinds = np.where(trials[t][:,c])[0]
             for y in yinds:
-                plt.plot(y*np.ones(2), [t, t+ymax], '-', color=clrs[c])
+                plt.plot(y*np.ones(2), [-t, -t+ymax], '-', color=clrs[c])
         xmx = trials[t].shape[0]
-        plt.plot([0, xmx], t + np.zeros(2), 'k-', alpha=0.25)
+        plt.plot([0, xmx], -t + np.zeros(2), 'k-', alpha=0.25)
     plt.yticks(ticks=[], labels=[])
     plt.xlabel('time $\\rightarrow$')
     plt.ylabel('trials $\\rightarrow$')
@@ -81,6 +81,7 @@ def plot_predictions(responses, key='value', gamma=1.0):
     plt.ylabel(key)
     plt.yticks(ticks=[], labels=[])
     plt.gca().spines.get('left').set_visible(False)
+    plt.show()
 
 def plot_hidden_activity(responses, key='Z', align_offset=1):
     clrs = COLORS[:responses[0]['X'].shape[1]]

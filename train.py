@@ -81,7 +81,8 @@ def train_model(model, dataloader, lr, nchances=4, epochs=5000, handle_padding=T
     try:
         for t in range(epochs):
             scores[t] = train_epoch(model, dataloader, loss_fn, optimizer, handle_padding)
-            print(f"Epoch {t+1}, {scores[t]:0.4f}")
+            if t % 10 == 0:
+                print(f"Epoch {t+1}, {scores[t]:0.4f}")
             # todo: when loss gets worse, save best weights so we can return this value
             if t > nchances and (scores[t] > scores[t-nchances:t]).all():
               print("Stopping.")
@@ -126,4 +127,4 @@ def probe_model(model, dataloader):
                     'X': X, 'y': y, 'value': V,
                     'Z': Z, 'pred': pred, 'rpe': rpe}
             responses.append(data)
-    return responses
+    return sorted(responses, key=lambda data: data['iti'])
