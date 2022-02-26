@@ -13,7 +13,7 @@ class PavlovTiming(Dataset):
     def __init__(self, ncues=4, ntrials_per_cue=50, include_reward=False):
         self.include_reward = include_reward
         self.ncues = ncues
-        self.reward_times = 2 + np.arange(ncues)
+        self.reward_times = 5 + np.arange(ncues)
         self.ntrials_per_cue = [ntrials_per_cue]*ncues
         self.ntrials = sum(self.ntrials_per_cue)
         self.make_trials()

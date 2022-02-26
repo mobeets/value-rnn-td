@@ -17,7 +17,7 @@ plot_trials(E.trials[:15])
 
 #%% create model
 
-hidden_size = 3 # number of hidden neurons
+hidden_size = 2 # number of hidden neurons
 gamma = 0.5 # discount rate
 model = ValueRNN(input_size=E.ncues + int(E.include_reward),
             hidden_size=hidden_size, gamma=gamma)

@@ -54,11 +54,11 @@ def plot_predictions(responses, key='value', gamma=1.0):
     for t, trial in enumerate(responses):
         X = trial['X']
         rs = trial['y']
-        t_stim = np.where(X.sum(axis=1))[0][0]
-        t_rew = np.where(rs)[0][0]
-        xs = np.arange(X.shape[0])# - t_stim
+        t_stim = trial['iti']
+        t_rew = trial['isi'] + t_stim
+        xs = np.arange(X.shape[0])
         y = trial[key]
-        clr = clrs[np.where(X[:,:-1].sum(axis=0))[0][0]]
+        clr = clrs[trial['cue']]
         
         # plot zero line
         plt.plot(xs, -t*tstep + np.zeros(len(xs)), 'k-', alpha=0.25)
@@ -87,11 +87,16 @@ def plot_hidden_activity(responses, key='Z', align_offset=1):
     msz = 5
     print(responses[0])
     for trial in responses:
-        clr = clrs[np.where(trial['X'][:,:-1].sum(axis=0))[0][0]]
+        t_stim = trial['iti']
+        t_rew = trial['isi'] + t_stim
+        clr = clrs[trial['cue']]
+        
         Z = trial[key]
-        plt.plot(Z[align_offset,0], Z[align_offset,1], 's', color=clr, markersize=5)
-        plt.plot(Z[:,0], Z[:,1], '.-', color=clr, markersize=msz)
+        plt.plot(Z[t_stim,0], Z[t_stim,1], 's', color=clr, markersize=5)
+        plt.plot(Z[:,0], Z[:,1], '.-', color=clr, markersize=msz, alpha=0.5)
+        plt.plot(Z[t_rew,0], Z[t_rew,1], '*', color=clr, markersize=5)
         # plt.plot(Z[trial.iti+1+align_offset,0], Z[trial.iti+1+align_offset,1], '*', markersize=6, color=h.get_color())
+    plt.plot(0, 0, 'k+')
     plt.xlabel('$z_1$')
     plt.ylabel('$z_2$')
     plt.gca().set_xticks([]);
