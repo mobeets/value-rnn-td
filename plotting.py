@@ -43,7 +43,7 @@ def plot_trials(trials):
     plt.ylabel('trials $\\rightarrow$')
     plt.gca().spines.get('left').set_visible(False)
 
-def plot_predictions(responses, key='value', gamma):
+def plot_predictions(responses, key='value', gamma=1.0):
     clrs = COLORS[:responses[0]['X'].shape[1]]
     if key == 'value':
         discount = lambda rs_future: np.sum([r * gamma ** (tau+1) if ~np.isnan(r) else 0.0 for tau,r in enumerate(rs_future)])
@@ -83,12 +83,14 @@ def plot_predictions(responses, key='value', gamma):
     plt.gca().spines.get('left').set_visible(False)
 
 def plot_hidden_activity(responses, key='Z', align_offset=1):
+    clrs = COLORS[:responses[0]['X'].shape[1]]
     msz = 5
+    print(responses[0])
     for trial in responses:
-        print(trial)
+        clr = clrs[np.where(trial['X'][:,:-1].sum(axis=0))[0][0]]
         Z = trial[key]
-        h = plt.plot(Z[align_offset,0], Z[align_offset,1], 's', markersize=5)
-        plt.plot(Z[:,0], Z[:,1], '.-', color=h.get_color(), markersize=msz)
+        plt.plot(Z[align_offset,0], Z[align_offset,1], 's', color=clr, markersize=5)
+        plt.plot(Z[:,0], Z[:,1], '.-', color=clr, markersize=msz)
         # plt.plot(Z[trial.iti+1+align_offset,0], Z[trial.iti+1+align_offset,1], '*', markersize=6, color=h.get_color())
     plt.xlabel('$z_1$')
     plt.ylabel('$z_2$')
