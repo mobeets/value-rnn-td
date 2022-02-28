@@ -4,7 +4,7 @@
 
 In the provided example experiment, each trial consists of a cue, `X` (either magenta or green), followed by a reward, `r` (black), that arrives a fixed number of time steps later (magenta = 10, green = 15). In other words, for a trial where `X(t) = green`, we will have `r(t + 15) = 1`.
 
-<img src="./plots/trials.png" width="120px;"/>
+<img src="./plots/trials.png" width="150px;"/>
 
 ### Training an RNN to do TD learning
 
@@ -17,17 +17,17 @@ To estimate value, we will train an LSTM with two hidden units using TD learning
 
 Below, we train our network using stochastic gradient descent (with backpropagation through time) with the Adam optimizer. Training is complete after roughly 2000 epochs.
 
-<img src="./plots/loss.png" width="200px;"/>
+<img src="./plots/loss.png" width="225px;"/>
 
 ### Inspecting the RNN
 
 Because this is such a simple task, we actually know the true value function. Specifically, we have `V(t) = γ^(c - t)` for `0 ≤ t ≤ c`, where `c = 10` for trials with a magenta cue, and `c = 15` for trials with a green cue. We can see how well our network has learned these two value functions. Below, the colored lines depict `Vhat(t)` on the two types of trials, and the black dashed lines indicate the true value, `V(t)`.
 
-<img src="./plots/value.png" width="120px;"/>
+<img src="./plots/value.png" width="150px;"/>
 
-Remember that `Vhat(t)` is the summed output of two hidden units, `z1(t)` and `z2(t)`. Below, we can visualize how this activity evolves during these two example trials. The squares indicate the time step on each trial when the cue was presented, while the stars indicate when reward was delivered. Note that these are the only two times in each trial when the network's input is non-zero.
+Remember that `Vhat(t)` is the summed output of the LSTM's two hidden units, `z1(t)` and `z2(t)`. Below, we can visualize how this activity evolves during these two example trials. The squares indicate the time step on each trial when the cue was presented, while the stars indicate when reward was delivered. Note that these are the only two times in each trial when the network's input is non-zero.
 
-<img src="./plots/rnn.png" width="200px;"/>
+<img src="./plots/rnn.png" width="225px;"/>
 
 ## Features
 
