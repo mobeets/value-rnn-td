@@ -1,4 +1,4 @@
-## Example
+## Training an RNN to learn value using TD learning
 
 ### Example experiment
 
