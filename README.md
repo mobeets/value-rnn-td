@@ -25,7 +25,7 @@ Because this is such a simple task, we actually know the true value function. Sp
 
 <img src="./plots/value.png" width="120px;"/>
 
-Remember that `Vhat(t)` is the summed output of two hidden units, `z1(t)` and `z2(t)`. Below, we can visualize how this activity evolves during these two example trials. The squares indicate the time step on each trial when the cue was presented, while the stars indicate when reward was delivered.
+Remember that `Vhat(t)` is the summed output of two hidden units, `z1(t)` and `z2(t)`. Below, we can visualize how this activity evolves during these two example trials. The squares indicate the time step on each trial when the cue was presented, while the stars indicate when reward was delivered. Note that these are the only two times in each trial when the network's input is non-zero.
 
 <img src="./plots/rnn.png" width="200px;"/>
 
