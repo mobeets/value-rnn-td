@@ -12,7 +12,7 @@ from plotting import plot_trials, plot_loss, plot_predictions, plot_hidden_activ
 
 #%% create experiment
 
-E = PavlovTiming(ncues=2, include_reward=True)
+E = PavlovTiming(ncues=2, include_reward=True, omission_probability=0.0)
 plot_trials(E.trials[:15])
 
 #%% create model
@@ -34,5 +34,5 @@ plot_loss(scores)
 #%% visualize results on example trials
 
 responses = probe_model(model, dataloader)
-plot_predictions(responses[:2], 'value', gamma=model.gamma)
-plot_hidden_activity(responses[:2])
+plot_predictions(responses[:4], 'value', gamma=model.gamma)
+plot_hidden_activity(responses[:4])

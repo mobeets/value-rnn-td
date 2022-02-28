@@ -129,7 +129,10 @@ def probe_model(model, dataloader):
             # recover trial info
             cue = np.where(X[:,:-1].sum(axis=0))[0][0]
             iti = np.where(X.sum(axis=1))[0][0]
-            isi = np.where(r)[0][0] - iti
+            if r.sum() > 0:
+                isi = np.where(r)[0][0] - iti
+            else:
+                isi = None
             
             data = {'cue': cue, 'iti': iti, 'isi': isi,
                     'X': X, 'y': y, 'value': V, 'rpe': rpe,

@@ -55,7 +55,10 @@ def plot_predictions(responses, key='value', gamma=1.0):
         X = trial['X']
         rs = trial['y']
         t_stim = trial['iti']
-        t_rew = trial['isi'] + t_stim
+        if trial['isi'] is not None:
+            t_rew = trial['isi'] + t_stim
+        else:
+            t_rew = None
         xs = np.arange(X.shape[0])
         y = trial[key]
         clr = clrs[trial['cue']]
@@ -67,7 +70,8 @@ def plot_predictions(responses, key='value', gamma=1.0):
         plt.plot(t_stim*np.ones(2), [-t*tstep, -t*tstep + tstep*ymax], '-', color=clr)
         
         # plot reward
-        plt.plot(t_rew*np.ones(2), [-t*tstep, -t*tstep + tstep*ymax], 'k-', alpha=0.25)
+        if t_rew is not None:
+            plt.plot(t_rew*np.ones(2), [-t*tstep, -t*tstep + tstep*ymax], 'k-', alpha=0.25)
 
         # plot prediction
         plt.plot(xs[:len(y)], 0.95*ymax*y - t*tstep, '.-', color=clr)
@@ -88,13 +92,17 @@ def plot_hidden_activity(responses, key='Z', align_offset=1):
     msz = 5
     for trial in responses:
         t_stim = trial['iti']
-        t_rew = trial['isi'] + t_stim
+        if trial['isi'] is not None:
+            t_rew = trial['isi'] + t_stim
+        else:
+            t_rew = None
         clr = clrs[trial['cue']]
         
         Z = trial[key]
         plt.plot(Z[t_stim,0], Z[t_stim,1], 's', color=clr, markersize=5)
         plt.plot(Z[:,0], Z[:,1], '.-', color=clr, markersize=msz, alpha=0.5)
-        plt.plot(Z[t_rew,0], Z[t_rew,1], '*', color=clr, markersize=5)
+        if t_rew is not None:
+            plt.plot(Z[t_rew,0], Z[t_rew,1], '*', color=clr, markersize=5)
         # plt.plot(Z[trial.iti+1+align_offset,0], Z[trial.iti+1+align_offset,1], '*', markersize=6, color=h.get_color())
     plt.plot(0, 0, 'k+')
     plt.xlabel('$z_1$')
