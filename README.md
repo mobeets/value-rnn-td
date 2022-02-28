@@ -2,7 +2,7 @@
 
 ### Example experiment
 
-In the provided example experiment, each trial consists of a cue, `X` (either magenta or green), followed by a reward, `r` (black), that arrives a fixed number of time steps later (magenta = 10, green = 15). In other words, whenever `X(t) = green`, we will have `r(t + 15) = 1`.
+In the provided example experiment, each trial consists of a cue, `X` (either magenta or green), followed by a reward, `r` (black), that arrives a fixed number of time steps later (magenta = 10, green = 15). In other words, for a trial where `X(t) = green`, we will have `r(t + 15) = 1`.
 
 <img src="./plots/trials.png" width="120px;"/>
 
