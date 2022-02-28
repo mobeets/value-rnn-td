@@ -86,7 +86,6 @@ def plot_predictions(responses, key='value', gamma=1.0):
 def plot_hidden_activity(responses, key='Z', align_offset=1):
     clrs = COLORS[:responses[0]['X'].shape[1]]
     msz = 5
-    print(responses[0])
     for trial in responses:
         t_stim = trial['iti']
         t_rew = trial['isi'] + t_stim

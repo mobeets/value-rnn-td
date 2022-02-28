@@ -5,7 +5,7 @@ Created on Thu Feb  3 14:01:56 2022
 
 @author: mobeets
 """
-from experiments import PavlovTiming
+from experiment import PavlovTiming
 from model import ValueRNN
 from train import make_dataloader, train_model, probe_model
 from plotting import plot_trials, plot_loss, plot_predictions, plot_hidden_activity
@@ -31,7 +31,7 @@ dataloader = make_dataloader(E, batch_size=batch_size)
 scores = train_model(model, dataloader, lr=lr)
 plot_loss(scores)
 
-#%% visualize results
+#%% visualize results on example trials
 
 responses = probe_model(model, dataloader)
 plot_predictions(responses[:2], 'value', gamma=model.gamma)

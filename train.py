@@ -33,7 +33,6 @@ def train_epoch(model, dataloader, loss_fn, optimizer=None, handle_padding=True)
         model.train()
     else:
         model.eval()
-    n_total = len(dataloader)
     train_loss = 0
     n = 0
 
@@ -66,14 +65,13 @@ def train_epoch(model, dataloader, loss_fn, optimizer=None, handle_padding=True)
             loss.backward()
             optimizer.step()
 
-        if optimizer is None or batch % int(n_total/5) == 0:
-            loss = loss.item()
-            train_loss += loss
-            n += 1
+        loss = loss.item()
+        train_loss += loss
+        n += 1
     train_loss /= n
     return train_loss
 
-def train_model(model, dataloader, lr, nchances=4, epochs=5000, handle_padding=True):
+def train_model(model, dataloader, lr, nchances=4, epochs=5000, handle_padding=True, print_every=10):
     loss_fn = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     
@@ -81,7 +79,7 @@ def train_model(model, dataloader, lr, nchances=4, epochs=5000, handle_padding=T
     try:
         for t in range(epochs):
             scores[t] = train_epoch(model, dataloader, loss_fn, optimizer, handle_padding)
-            if t % 10 == 0:
+            if t % print_every == 0:
                 print(f"Epoch {t+1}, {scores[t]:0.4f}")
             # todo: when loss gets worse, save best weights so we can return this value
             if t > nchances and (scores[t] > scores[t-nchances:t]).all():
@@ -93,7 +91,7 @@ def train_model(model, dataloader, lr, nchances=4, epochs=5000, handle_padding=T
         print("Done!")
         final_score = scores[np.argmin(~np.isnan(scores))-1]
         print(f'Final loss: {final_score}')
-        return scores
+        return scores[~np.isnan(scores)]
 
 def probe_model(model, dataloader):
     responses = []
