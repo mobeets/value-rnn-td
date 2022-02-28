@@ -28,7 +28,7 @@ print('model # parameters: {}'.format(model.n_parameters()))
 lr = 0.003
 batch_size = 12
 dataloader = make_dataloader(E, batch_size=batch_size)
-scores = train_model(model, dataloader, lr=lr)
+scores = train_model(model, dataloader, lr=lr, handle_padding=True)
 plot_loss(scores)
 
 #%% visualize results on example trials

@@ -6,6 +6,7 @@ Created on Thu Feb  3 11:43:03 2022
 @author: mobeets
 """
 import numpy as np
+from copy import deepcopy
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
@@ -76,22 +77,31 @@ def train_model(model, dataloader, lr, nchances=4, epochs=5000, handle_padding=T
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     
     scores = np.nan * np.ones((epochs,))
+    best_score = np.inf
+    best_weights = None
+    nsteps_increase = 0
     try:
         for t in range(epochs):
             scores[t] = train_epoch(model, dataloader, loss_fn, optimizer, handle_padding)
             if t % print_every == 0:
                 print(f"Epoch {t+1}, {scores[t]:0.4f}")
-            # todo: when loss gets worse, save best weights so we can return this value
-            if t > nchances and (scores[t] > scores[t-nchances:t]).all():
-              print("Stopping.")
-              break
+            if scores[t] < best_score:
+                best_score = scores[t]
+                best_weights = deepcopy(model.state_dict())
+            if t > 0 and scores[t] > scores[t-1]:
+                if nsteps_increase > nchances:
+                    print("Stopping.")
+                    break
+                nsteps_increase += 1
+            else:
+                nsteps_increase = 0
     except KeyboardInterrupt:
         pass
     finally:
-        print("Done!")
-        final_score = scores[np.argmin(~np.isnan(scores))-1]
-        print(f'Final loss: {final_score}')
-        return scores[~np.isnan(scores)]
+        scores = scores[~np.isnan(scores)]
+        model.load_state_dict(best_weights)
+        print(f"Done! Best loss: {best_score}")
+        return scores
 
 def probe_model(model, dataloader):
     responses = []
