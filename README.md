@@ -15,7 +15,7 @@ To estimate value, we will train an LSTM with two hidden units using TD learning
 - In TD learning, we estimate all future rewards as `γVhat(t+1)` ("bootstrapping"), so our network's target at each time step is `r(t) + γVhat(t+1)`. Thus, our network's objective is to minimize `(r(t) + γVhat(t+1) - Vhat(t))^2` with respect to the LSTM's parameters. Here, we'll use `γ=0.5`.
 
 
-Below, our network finishes learning after roughly 1000 epochs.
+Below, we train our network using stochastic gradient descent (with backpropagation through time) with the Adam optimizer. Training is complete after roughly 2000 epochs.
 
 <img src="./plots/loss.png" width="200px;"/>
 
@@ -31,8 +31,10 @@ Remember that `Vhat(t)` is the summed output of two hidden units, `z1(t)` and `z
 
 ## Features
 
-- handling numpy training data
-- training on unequal trial/sequence lengths, and not computing loss on padded values in sequences
+Though the above example is very simply, training this network using pytorch involves a few tricky steps. These include:
+
+- handling numpy arrays as training data
+- training on unequal trial/sequence lengths using padding, while ignoring the padded values when computing gradients
 - training with early stopping
 - using RNN to perform TD learning
 - accessing/visualizing RNN's hidden unit activity
