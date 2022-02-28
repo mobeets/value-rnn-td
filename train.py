@@ -46,19 +46,18 @@ def train_epoch(model, dataloader, loss_fn, optimizer=None, handle_padding=True)
         V, (hx,cx) = model(X)
 
         # Compute prediction error
-        V_cur = V[:-1,:,:]
+        V_hat = V[:-1,:,:]
         V_next = V[1:,:,:]
-        pred = V_cur - model.gamma*V_next
-        y = y[:-1,:,:]
+        V_target = y[:-1,:,:] + model.gamma*V_next.detach()
 
         if handle_padding:
             # do not compute loss on padded values
             loss = 0.0
             for i,l in enumerate(xls):
-                loss += loss_fn(pred[:,i][:l], y[:,i][:l])
+                loss += loss_fn(V_hat[:,i][:l], V_target[:,i][:l])
             loss /= len(xls)
         else:
-            loss = loss_fn(pred, y)
+            loss = loss_fn(V_hat, V_target)
 
         # Backpropagation
         if optimizer is not None:
@@ -120,11 +119,12 @@ def probe_model(model, dataloader):
             Z = Z_batch[:xls[j],j,:]
             y = y_batch[:xls[j],j,:]
             V = V_batch[:xls[j],j,:]
-            Vcur = V[:-1,:]
-            Vnext = V[1:,:]
-            pred = Vcur - model.gamma*Vnext
+            
+            V_hat = V[:-1,:]
+            V_next = V[1:,:]
             r = y[:-1,:]
-            rpe = r - pred
+            V_target = r + model.gamma*V_next
+            rpe = V_target - V_hat
             
             # recover trial info
             cue = np.where(X[:,:-1].sum(axis=0))[0][0]
@@ -132,7 +132,7 @@ def probe_model(model, dataloader):
             isi = np.where(r)[0][0] - iti
             
             data = {'cue': cue, 'iti': iti, 'isi': isi,
-                    'X': X, 'y': y, 'value': V,
-                    'Z': Z, 'pred': pred, 'rpe': rpe}
+                    'X': X, 'y': y, 'value': V, 'rpe': rpe,
+                    'Z': Z}
             responses.append(data)
     return sorted(responses, key=lambda data: data['iti'])

@@ -47,6 +47,12 @@ class ValueRNN(nn.Module):
             self.features[name] = output
         return hook
     
+    def save_weights_to_path(self, path):
+        torch.save(self.state_dict(), path)
+        
+    def load_weights_from_path(self, path):
+        self.load_state_dict(torch.load(path))
+        
     def prepare_to_gather_activity(self):
         if hasattr(self, 'handle'):
             self.handle.remove()
