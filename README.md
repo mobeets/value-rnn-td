@@ -31,12 +31,11 @@ Remember that `Vhat(t)` is the summed output of two hidden units, `z1(t)` and `z
 
 ## Features
 
-Though the above example is very simply, training this network using pytorch involves a few tricky steps. These include:
+Though the above example is very simple, training such a network using pytorch involves a few tricky steps. This includes:
 
 - handling numpy arrays as training data
 - training on unequal trial/sequence lengths using padding, while ignoring the padded values when computing gradients
-- training with early stopping
-- using RNN to perform TD learning
+- correctly using an RNN to perform TD learning
 - accessing/visualizing RNN's hidden unit activity
 - freezing/unfreezing network weights
 - saving/loading model weights
