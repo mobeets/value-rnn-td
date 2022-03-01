@@ -10,11 +10,10 @@ import torch
 from torch.utils.data import Dataset
 
 class PavlovTiming(Dataset):
-    def __init__(self, ncues=4, ntrials_per_cue=50, omission_probability=0.0, include_reward=False):
+    def __init__(self, ncues=4, ntrials_per_cue=50, include_reward=True):
         self.include_reward = include_reward
         self.ncues = ncues
         self.reward_times = 10 + 5*np.arange(ncues)
-        self.omission_probability = omission_probability
         self.ntrials_per_cue = ntrials_per_cue
         self.ntrials = self.ncues * self.ntrials_per_cue
         self.make_trials()
@@ -23,8 +22,7 @@ class PavlovTiming(Dataset):
         isi = self.reward_times[cue]
         trial = np.zeros((iti + isi + 2, self.ncues + 1))
         trial[iti, cue] = 1.0 # encode stimulus
-        if self.omission_probability == 0 or np.random.rand() > self.omission_probability:
-            trial[iti + isi, -1] = 1.0 # encode reward
+        trial[iti + isi, -1] = 1.0 # encode reward
         return trial
 
     def make_trials(self):
