@@ -12,10 +12,10 @@ We can define the "value" of being at time `t` as the expected cumulative reward
 
 To estimate value, we will train an LSTM with two hidden units using TD learning. Specifically:
 - At each time step, our network's output will be `Vhat(t) = max(0, z1(t)) + max(0, z2(t))`, where `z1(t)` and `z2(t)` is the activity of our two hidden units.
-- In TD learning, we estimate all future rewards as `γVhat(t+1)` ("bootstrapping"), so our network's target at each time step is `r(t) + γVhat(t+1)`. Thus, our network's objective is to minimize `(r(t) + γVhat(t+1) - Vhat(t))^2` with respect to the LSTM's parameters. Here, we'll use `γ=0.5`.
+- In TD learning, we estimate all future rewards as `γVhat(t+1)` ("bootstrapping"), so our goal is to get `Vhat(t)` as close to `r(t) + γVhat(t+1)` as possible. In other words, the network's error at each time step is `δ(t) = r(t) + γVhat(t+1) - Vhat(t)`, where `δ(t)` is called the "reward prediction error."
+- To update our network's parameters, `θ`, we use stochastic gradient descent: `Δθ = αδ(t)g(t)`, where `α` is our step size, and `g(t)` is the gradient of `Vhat(t)` with respect to `θ`. (TD learning in this case is equivalent to minimizing the mean squared error between our target, `r(t) + γVhat(t+1)`, and our prediction, `Vhat(t)`.)
 
-
-Below, we train our network using stochastic gradient descent (with backpropagation through time) with the Adam optimizer. Training is complete after roughly 2000 epochs.
+For this example, we'll set `γ=0.5`. Below, we train our network using stochastic gradient descent (with backpropagation through time) with the Adam optimizer. Training is complete after roughly 2000 epochs.
 
 <img src="./plots/loss.png" width="225px;"/>
 
