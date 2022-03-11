@@ -40,8 +40,7 @@ class PavlovTiming(Dataset):
         
         # augment X with previous y
         if self.include_reward:
-            yprev = np.vstack([np.zeros((1, 1)), y[:-1,:]])
-            X = np.hstack([X, yprev])
+            X = np.hstack([X, y])
 
         return (torch.from_numpy(X), torch.from_numpy(y))
 

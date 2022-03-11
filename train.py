@@ -37,10 +37,10 @@ def train_epoch(model, dataloader, loss_fn, optimizer=None, handle_padding=True)
     train_loss = 0
     n = 0
 
-    for batch, (X, y, xls) in enumerate(dataloader):
+    for batch, (X, y, x_lengths) in enumerate(dataloader):
         if handle_padding:
             # handle sequences with different lengths
-            X = pack_padded_sequence(X, xls, enforce_sorted=False)
+            X = pack_padded_sequence(X, x_lengths, enforce_sorted=False)
         
         # train TD learning
         V, (hx,cx) = model(X)
@@ -48,14 +48,14 @@ def train_epoch(model, dataloader, loss_fn, optimizer=None, handle_padding=True)
         # Compute prediction error
         V_hat = V[:-1,:,:]
         V_next = V[1:,:,:]
-        V_target = y[:-1,:,:] + model.gamma*V_next.detach()
+        V_target = y[1:,:,:] + model.gamma*V_next.detach()
 
         if handle_padding:
             # do not compute loss on padded values
             loss = 0.0
-            for i,l in enumerate(xls):
+            for i,l in enumerate(x_lengths):
                 loss += loss_fn(V_hat[:,i][:l], V_target[:,i][:l])
-            loss /= len(xls)
+            loss /= len(x_lengths)
         else:
             loss = loss_fn(V_hat, V_target)
 
@@ -75,19 +75,20 @@ def train_model(model, dataloader, lr, nchances=4, epochs=5000, handle_padding=T
     loss_fn = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     
-    scores = np.nan * np.ones((epochs,))
-    best_score = np.inf
-    best_weights = None
+    scores = np.nan * np.ones((epochs+1,))
+    scores[0] = train_epoch(model, dataloader, loss_fn, None, handle_padding)
+    best_score = scores[0]
+    best_weights = deepcopy(model.state_dict())
     nsteps_increase = 0
     try:
         for t in range(epochs):
-            scores[t] = train_epoch(model, dataloader, loss_fn, optimizer, handle_padding)
             if t % print_every == 0:
-                print(f"Epoch {t+1}, {scores[t]:0.4f}")
-            if scores[t] < best_score:
-                best_score = scores[t]
+                print(f"Epoch {t}, {scores[t]:0.4f}")
+            scores[t+1] = train_epoch(model, dataloader, loss_fn, optimizer, handle_padding)
+            if scores[t+1] < best_score:
+                best_score = scores[t+1]
                 best_weights = deepcopy(model.state_dict())
-            if t > 0 and scores[t] > scores[t-1]:
+            if scores[t+1] > scores[t]:
                 if nsteps_increase > nchances:
                     print("Stopping.")
                     break
@@ -106,31 +107,31 @@ def probe_model(model, dataloader):
     responses = []
     model.prepare_to_gather_activity()
     with torch.no_grad():
-      for batch, (X, y, xls) in enumerate(dataloader):
+      for batch, (X, y, x_lengths) in enumerate(dataloader):
         X_batch = X.numpy()
         y_batch = y.numpy()
         V_batch, _ = model(X)
         V_batch = V_batch.numpy()
         Z_batch = model.features['hidden'][0].detach().numpy()
     
-        # for each item in batch
+        # for each episode in batch
         for j in range(X_batch.shape[1]):
-            X = X_batch[:xls[j],j,:]
-            Z = Z_batch[:xls[j],j,:]
-            y = y_batch[:xls[j],j,:]
-            V = V_batch[:xls[j],j,:]
+            X = X_batch[:x_lengths[j],j,:]
+            Z = Z_batch[:x_lengths[j],j,:]
+            y = y_batch[:x_lengths[j],j,:]
+            V = V_batch[:x_lengths[j],j,:]
             
             V_hat = V[:-1,:]
             V_next = V[1:,:]
-            r = y[:-1,:]
+            r = y[1:,:]
             V_target = r + model.gamma*V_next
             rpe = V_target - V_hat
             
             # recover trial info
             cue = np.where(X[:,:-1].sum(axis=0))[0][0]
             iti = np.where(X.sum(axis=1))[0][0]
-            if r.sum() > 0:
-                isi = np.where(r)[0][0] - iti
+            if y.sum() > 0:
+                isi = np.where(y)[0][0] - iti
             else:
                 isi = None
             

@@ -54,7 +54,7 @@ def plot_predictions(responses, key='value', gamma=1.0):
     for t, trial in enumerate(responses):
         X = trial['X']
         rs = trial['y']
-        t_stim = trial['iti']
+        t_stim = trial['iti']-1
         if trial['isi'] is not None:
             t_rew = trial['isi'] + t_stim
         else:
@@ -79,7 +79,7 @@ def plot_predictions(responses, key='value', gamma=1.0):
         if key == 'value':
             # plot true value
             R = np.array([r + discount(rs[(i+1):]) for i,r in enumerate(rs)])
-            plt.plot(xs, tstep*ymax*R - t*tstep, 'k--', alpha=0.9)
+            plt.plot(xs[:-1], tstep*ymax*R[1:] - t*tstep, 'k--', alpha=0.9)
     
     plt.xlabel('time $\\rightarrow$')
     plt.ylabel(key)
