@@ -54,8 +54,9 @@ def train_epoch(model, dataloader, loss_fn, optimizer=None, handle_padding=True)
             # do not compute loss on padded values
             loss = 0.0
             for i,l in enumerate(x_lengths):
-                loss += loss_fn(V_hat[:,i][:l], V_target[:,i][:l])
-            loss /= len(x_lengths)
+                # we must stop one short because V_target is one step ahead
+                loss += loss_fn(V_hat[:,i][:(l-1)], V_target[:,i][:(l-1)])
+            loss /= sum(x_lengths) # when reduction='sum', this makes loss the mean per time step
         else:
             loss = loss_fn(V_hat, V_target)
 
@@ -72,7 +73,7 @@ def train_epoch(model, dataloader, loss_fn, optimizer=None, handle_padding=True)
     return train_loss
 
 def train_model(model, dataloader, lr, nchances=4, epochs=5000, handle_padding=True, print_every=10):
-    loss_fn = nn.MSELoss()
+    loss_fn = nn.MSELoss(reduction='sum')
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     
     scores = np.nan * np.ones((epochs+1,))
